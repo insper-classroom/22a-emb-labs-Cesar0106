@@ -25,7 +25,7 @@
 #define LED3_PIO_IDX       2
 #define LED3_PIO_IDX_MASK  (1 << LED3_PIO_IDX)
 
-// Configuracoes dos botões
+// Configuracoes dos botÃµes
 
 #define BUT1_PIO           PIOD
 #define BUT1_PIO_ID        ID_PIOD
@@ -103,7 +103,7 @@ void RTC_init(Rtc *rtc, uint32_t id_rtc, calendar t, uint32_t irq_type) {
 	NVIC_EnableIRQ(id_rtc);
 	rtc_enable_interrupt(rtc,  irq_type);
 	
-	//Configurando Botão 1
+	//Configurando BotÃ£o 1
 	pmc_enable_periph_clk(BUT1_PIO_ID);
 	pio_set_input(BUT1_PIO, BUT1_PIO_IDX_MASK, PIO_DEFAULT);
 	pio_pull_up(BUT1_PIO, BUT1_PIO_IDX_MASK, 1);
@@ -265,7 +265,7 @@ int main (void)
 	/* Insert application code here, after the board has been initialized. */
 	while(1) {
 		if (but1_flag) {
-			rtc_get_time()
+			//rtc_get_time() Usar para pegar o tempo no lugar de delay_ms(20000)
 			if(flag_rtc_alarm){
 				pisca_led(1, 200);
 				flag_rtc_alarm = 0;
