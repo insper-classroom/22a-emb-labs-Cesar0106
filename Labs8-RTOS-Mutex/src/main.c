@@ -62,6 +62,7 @@ static lv_indev_drv_t indev_drv;
 /* RTOS                                                                 */
 /************************************************************************/
 SemaphoreHandle_t xSemaphoreClock;
+SemaphoreHandle_t xMutexLVGL; 
 
 #define TASK_LCD_STACK_SIZE                (1024*6/sizeof(portSTACK_TYPE))
 #define TASK_LCD_STACK_PRIORITY            (tskIDLE_PRIORITY)
@@ -294,8 +295,10 @@ static void task_lcd(void *pvParameters) {
 	lv_termostato();
 
 	for (;;)  {
+		xSemaphoreTake( xMutexLVGL, portMAX_DELAY );
 		lv_tick_inc(50);
 		lv_task_handler();
+		xSemaphoreGive( xMutexLVGL );
 		vTaskDelay(50);
 	}
 }
@@ -403,6 +406,7 @@ int main(void) {
 	configure_touch();
 	configure_lvgl();
 	xSemaphoreClock = xSemaphoreCreateBinary();
+	xMutexLVGL = xSemaphoreCreateMutex();
 	/* Create task to control oled */
 	if (xTaskCreate(task_lcd, "LCD", TASK_LCD_STACK_SIZE, NULL, TASK_LCD_STACK_PRIORITY, NULL) != pdPASS) {
 		printf("Failed to create lcd task\r\n");
