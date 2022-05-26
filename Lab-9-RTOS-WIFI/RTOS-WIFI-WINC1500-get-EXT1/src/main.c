@@ -5,6 +5,7 @@
 #include "driver/include/m2m_wifi.h"
 #include "socket/include/socket.h"
 #include "util.h"
+#include <string.h>
 
 #define LED_PIO           PIOC                 
 #define LED_PIO_ID        ID_PIOC              
@@ -85,6 +86,7 @@ extern void vApplicationMallocFailedHook(void){
 /* funcoes                                                              */
 /************************************************************************/
 void Led_init(void);
+void format_get(char *buffer, char path[]);
 /************************************************************************/
 /* callbacks                                                            */
 /************************************************************************/
@@ -222,9 +224,20 @@ static void wifi_cb(uint8_t u8MsgType, void *pvMsg)
   }
 }
 
+
+
 /************************************************************************/
 /* TASKS                                                                */
 /************************************************************************/
+void format_get(char *buff, char path[]){
+	char get[]= "GET ";
+	char end[] =  " HTTP/1.1\r\n Accept: */*\r\n\r\n";
+	strcat(get,path);
+	strcat(get,end);
+	sprintf((char *)buff, get);
+	send(tcp_client_socket, buff, strlen((char *)buff), 0);
+	printf("funcionou1");
+}
 
 static void task_process(void *pvParameters) {
 
@@ -259,8 +272,8 @@ static void task_process(void *pvParameters) {
 
       case GET:
       printf("STATE: GET \n");
-      sprintf((char *)g_sendBuffer, MAIN_PREFIX_BUFFER);
-      send(tcp_client_socket, g_sendBuffer, strlen((char *)g_sendBuffer), 0);
+      format_get(g_sendBuffer, "/status");
+	  printf("funcionou");
       state = ACK;
       break;
 
